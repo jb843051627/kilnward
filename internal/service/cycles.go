@@ -70,6 +70,9 @@ func (a *App) AdvanceCycle(ctx context.Context, cycleID string) (model.Cycle, er
 	if err != nil {
 		return cycle, err
 	}
+	if cycle.StageIndex < 0 || cycle.StageIndex >= len(stages) {
+		return cycle, model.ErrInvalidState
+	}
 	if !cycle.CanAdvance(len(stages)) {
 		return cycle, model.ErrInvalidState
 	}

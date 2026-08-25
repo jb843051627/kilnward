@@ -44,7 +44,7 @@ func (c Cycle) CanAdvance(stageCount int) bool {
 }
 
 func (c Cycle) CanFinish(stageCount int) bool {
-	return stageCount > 0 && c.StageIndex == stageCount-1 && (c.Status == CycleActive || c.Status == CycleCooling)
+	return stageCount > 0 && c.StageIndex >= 0 && c.StageIndex == stageCount-1 && (c.Status == CycleActive || c.Status == CycleCooling)
 }
 
 func (c Cycle) NextStage() Cycle {
