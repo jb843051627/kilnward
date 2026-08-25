@@ -54,21 +54,22 @@ func (a *App) RecordReadings(ctx context.Context, readings []model.Reading) erro
 	if len(readings) == 0 {
 		return model.ErrValidation
 	}
-	for i := range readings {
-		if readings[i].ID == "" {
-			readings[i].ID = a.newID("reading")
+	items := append([]model.Reading(nil), readings...)
+	for i := range items {
+		if items[i].ID == "" {
+			items[i].ID = a.newID("reading")
 		}
-		if readings[i].RecordedAt.IsZero() {
-			readings[i].RecordedAt = a.now()
+		if items[i].RecordedAt.IsZero() {
+			items[i].RecordedAt = a.now()
 		}
-		if readings[i].Quality == "" {
-			readings[i].Quality = model.QualityGood
+		if items[i].Quality == "" {
+			items[i].Quality = model.QualityGood
 		}
 	}
-	if err := a.repo.AddReadings(ctx, readings); err != nil {
+	if err := a.repo.AddReadings(ctx, items); err != nil {
 		return err
 	}
-	a.metrics.Add("reading.batch", int64(len(readings)))
+	a.metrics.Add("reading.batch", int64(len(items)))
 	return nil
 }
 

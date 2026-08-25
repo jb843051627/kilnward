@@ -31,13 +31,13 @@ type GateReport struct {
 }
 
 func (r GateReport) Failed() []Gate {
-	failed := make([]Gate, 0)
+	items := make([]Gate, 0)
 	for _, check := range r.Checks {
 		if !check.Passed {
-			failed = append(failed, check)
+			items = append(items, check)
 		}
 	}
-	return failed
+	return items
 }
 
 func (g Gate) Validate() error {

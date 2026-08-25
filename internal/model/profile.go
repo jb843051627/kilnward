@@ -118,10 +118,8 @@ func (p Profile) Fingerprint() string {
 }
 
 func (p Profile) Step(sequence int) (ProfileStep, error) {
-	for _, step := range p.Steps {
-		if step.Sequence == sequence {
-			return step, nil
-		}
+	if sequence < 0 || sequence >= len(p.Steps) {
+		return ProfileStep{}, ErrNotFound
 	}
-	return ProfileStep{}, ErrNotFound
+	return p.Steps[sequence], nil
 }
