@@ -6,9 +6,10 @@ import (
 )
 
 type Job struct {
-	ID   string
-	Run  func(context.Context) error
-	Done chan error
+	ID      string
+	Context context.Context
+	Run     func(context.Context) error
+	Done    chan error
 }
 
 type Queue struct {
@@ -36,7 +37,11 @@ func (q *Queue) loop() {
 			if job.Run == nil {
 				continue
 			}
-			err := job.Run(context.Background())
+			jobContext := job.Context
+			if jobContext == nil {
+				jobContext = context.Background()
+			}
+			err := job.Run(jobContext)
 			if job.Done != nil {
 				select {
 				case job.Done <- err:
@@ -50,6 +55,7 @@ func (q *Queue) loop() {
 }
 
 func (q *Queue) Submit(ctx context.Context, job Job) error {
+	job.Context = ctx
 	select {
 	case q.jobs <- job:
 		return nil
