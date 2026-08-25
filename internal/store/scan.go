@@ -18,25 +18,28 @@ func scanKiln(row scanner) (model.Kiln, error) {
 
 func scanLoad(row scanner) (model.Load, error) {
 	var l model.Load
-	var state, started, finished, created, updated string
+	var state, created, updated string
+	var started, finished sql.NullString
 	err := row.Scan(&l.ID, &l.KilnID, &l.Label, &state, &l.Material.Code, &l.Material.Quantity, &l.Material.Moisture, &l.Profile, &l.TargetTempC, &l.CurrentStage, &started, &finished, &l.LastError, &created, &updated, &l.Version)
-	l.State, l.StartedAt, l.FinishedAt, l.CreatedAt, l.UpdatedAt = model.LoadState(state), pointerTime(started), pointerTime(finished), parseTime(created), parseTime(updated)
+	l.State, l.StartedAt, l.FinishedAt, l.CreatedAt, l.UpdatedAt = model.LoadState(state), pointerTime(started.String), pointerTime(finished.String), parseTime(created), parseTime(updated)
 	return l, err
 }
 
 func scanCycle(row scanner) (model.Cycle, error) {
 	var c model.Cycle
-	var status, started, ended, created, updated string
+	var status, created, updated string
+	var started, ended sql.NullString
 	err := row.Scan(&c.ID, &c.LoadID, &c.Profile, &status, &c.StageIndex, &started, &ended, &created, &updated, &c.Version)
-	c.Status, c.StartedAt, c.EndedAt, c.CreatedAt, c.UpdatedAt = model.CycleStatus(status), pointerTime(started), pointerTime(ended), parseTime(created), parseTime(updated)
+	c.Status, c.StartedAt, c.EndedAt, c.CreatedAt, c.UpdatedAt = model.CycleStatus(status), pointerTime(started.String), pointerTime(ended.String), parseTime(created), parseTime(updated)
 	return c, err
 }
 
 func scanStage(row scanner) (model.Stage, error) {
 	var s model.Stage
-	var status, started, ended string
+	var status string
+	var started, ended sql.NullString
 	err := row.Scan(&s.ID, &s.CycleID, &s.Sequence, &s.Name, &s.TargetTempC, &s.ToleranceC, &s.MinHoldSeconds, &s.MaxHoldSeconds, &status, &started, &ended)
-	s.Status, s.StartedAt, s.EndedAt = model.StageStatus(status), pointerTime(started), pointerTime(ended)
+	s.Status, s.StartedAt, s.EndedAt = model.StageStatus(status), pointerTime(started.String), pointerTime(ended.String)
 	return s, err
 }
 
@@ -59,18 +62,20 @@ func scanGate(row scanner) (model.Gate, error) {
 
 func scanIncident(row scanner) (model.Incident, error) {
 	var i model.Incident
-	var severity, status, opened, acknowledged, closed string
+	var severity, status, opened string
+	var acknowledged, closed sql.NullString
 	err := row.Scan(&i.ID, &i.KilnID, &i.LoadID, &i.Code, &severity, &status, &i.Detail, &opened, &acknowledged, &closed, &i.Owner)
 	i.Severity, i.Status, i.OpenedAt = model.IncidentSeverity(severity), model.IncidentStatus(status), parseTime(opened)
-	i.AcknowledgedAt, i.ClosedAt = pointerTime(acknowledged), pointerTime(closed)
+	i.AcknowledgedAt, i.ClosedAt = pointerTime(acknowledged.String), pointerTime(closed.String)
 	return i, err
 }
 
 func scanMaintenance(row scanner) (model.Maintenance, error) {
 	var m model.Maintenance
-	var status, opened, closed string
+	var status, opened string
+	var closed sql.NullString
 	err := row.Scan(&m.ID, &m.KilnID, &m.Kind, &status, &m.Note, &opened, &closed, &m.Technician)
-	m.Status, m.OpenedAt, m.ClosedAt = model.MaintenanceStatus(status), parseTime(opened), pointerTime(closed)
+	m.Status, m.OpenedAt, m.ClosedAt = model.MaintenanceStatus(status), parseTime(opened), pointerTime(closed.String)
 	return m, err
 }
 
