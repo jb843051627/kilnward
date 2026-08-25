@@ -22,7 +22,7 @@ func (a *App) RecordReading(ctx context.Context, reading model.Reading) (model.R
 		reading.Quality = model.QualityGood
 	}
 	if err := reading.Validate(); err != nil {
-		return reading, err
+		return reading, fmt.Errorf("reading validation: %w", err)
 	}
 	if err := validation.Temperature(reading.Temperature); err != nil {
 		return reading, err
@@ -35,7 +35,7 @@ func (a *App) RecordReading(ctx context.Context, reading model.Reading) (model.R
 		return reading, err
 	}
 	if cycle.LoadID != reading.LoadID {
-		return reading, model.ErrConflict
+		return reading, fmt.Errorf("reading cycle: %w", model.ErrConflict)
 	}
 	if err := a.repo.AddReading(ctx, reading); err != nil {
 		return reading, fmt.Errorf("save reading: %w", err)
@@ -67,7 +67,7 @@ func (a *App) RecordReadings(ctx context.Context, readings []model.Reading) erro
 		}
 	}
 	if err := a.repo.AddReadings(ctx, items); err != nil {
-		return err
+		return fmt.Errorf("batch readings: %w", err)
 	}
 	a.metrics.Add("reading.batch", int64(len(items)))
 	return nil
