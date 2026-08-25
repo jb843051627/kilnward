@@ -54,6 +54,9 @@ func (p Profile) Validate() error {
 	if p.Author == "" {
 		problems = append(problems, FieldError{Field: "author", Message: "不能为空"})
 	}
+	if len(p.Steps) == 0 {
+		problems = append(problems, FieldError{Field: "steps", Message: "不能为空"})
+	}
 	if len(p.Steps) < 2 {
 		problems = append(problems, FieldError{Field: "steps", Message: "至少需要两个阶段"})
 	}
