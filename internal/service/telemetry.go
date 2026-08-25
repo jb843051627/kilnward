@@ -34,7 +34,7 @@ func (a *App) IngestTelemetry(ctx context.Context, frame model.TelemetryFrame) (
 	}
 	frame.Samples = decision.Samples
 	if err := a.repo.SaveTelemetry(ctx, frame); err != nil {
-		return frame, err
+		return frame, fmt.Errorf("persist telemetry: %w", err)
 	}
 	readings := make([]model.Reading, 0, len(frame.Samples))
 	for i, sample := range frame.Samples {
