@@ -31,7 +31,6 @@ func (s *Store) ListTelemetry(ctx context.Context, cycleID string, limit int) ([
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 	frames := make([]model.TelemetryFrame, 0)
 	for rows.Next() {
 		var frame model.TelemetryFrame
@@ -40,14 +39,22 @@ func (s *Store) ListTelemetry(ctx context.Context, cycleID string, limit int) ([
 			return nil, err
 		}
 		frame.ReceivedAt = parseTime(received)
-		samples, err := s.samplesForFrame(ctx, frame.ID)
+		frames = append(frames, frame)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	for i := range frames {
+		samples, err := s.samplesForFrame(ctx, frames[i].ID)
 		if err != nil {
 			return nil, err
 		}
-		frame.Samples = samples
-		frames = append(frames, frame)
+		frames[i].Samples = samples
 	}
-	return frames, rows.Err()
+	return frames, nil
 }
 
 func (s *Store) samplesForFrame(ctx context.Context, frameID string) ([]model.ProbeSample, error) {
