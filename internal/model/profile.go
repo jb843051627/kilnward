@@ -60,11 +60,12 @@ func (p Profile) Validate() error {
 	if len(p.Steps) < 2 {
 		problems = append(problems, FieldError{Field: "steps", Message: "至少需要两个阶段"})
 	}
-	sequences := make([]int, 0, len(p.Steps))
-	for _, step := range p.Steps {
+	steps := append([]ProfileStep(nil), p.Steps...)
+	sequences := make([]int, 0, len(steps))
+	for _, step := range steps {
 		sequences = append(sequences, step.Sequence)
 		if err := step.Validate(); err != nil {
-			problems = append(problems, FieldError{Field: fmt.Sprintf("step.%d", step.Sequence), Message: err.Error()})
+			return fmt.Errorf("profile step %d: %w", step.Sequence, err)
 		}
 	}
 	sort.Ints(sequences)
