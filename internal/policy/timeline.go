@@ -18,9 +18,9 @@ func Merge(a, b []model.TimelineEntry) []model.TimelineEntry {
 	return Sort(merged)
 }
 
-func Limit(entries []model.TimelineEntry, n int) []model.TimelineEntry {
-	if n <= 0 || len(entries) <= n {
+func Limit(entries []model.TimelineEntry, limit int) []model.TimelineEntry {
+	if limit <= 0 || len(entries) <= limit {
 		return entries
 	}
-	return entries[len(entries)-n:]
+	return entries[len(entries)-limit:]
 }

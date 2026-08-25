@@ -91,9 +91,9 @@ func (s ProfileStep) Validate() error {
 }
 
 func (p Profile) OrderedSteps() []ProfileStep {
-	steps := append([]ProfileStep(nil), p.Steps...)
-	sort.Slice(steps, func(i, j int) bool { return steps[i].Sequence < steps[j].Sequence })
-	return steps
+	items := append([]ProfileStep(nil), p.Steps...)
+	sort.Slice(items, func(i, j int) bool { return items[i].Sequence < items[j].Sequence })
+	return items
 }
 
 func (p Profile) Duration() time.Duration {
@@ -108,10 +108,10 @@ func (p Profile) Duration() time.Duration {
 }
 
 func (p Profile) Fingerprint() string {
-	steps := p.OrderedSteps()
+	items := p.OrderedSteps()
 	digest := sha256.New()
 	fmt.Fprintf(digest, "%s:%s:%d", p.Name, p.Material, p.Revision)
-	for _, step := range steps {
+	for _, step := range items {
 		fmt.Fprintf(digest, "|%d:%s:%.2f:%.2f:%.2f:%d:%d:%.2f", step.Sequence, step.Name, step.TargetTempC, step.RampPerMinute, step.ToleranceC, step.MinHoldSeconds, step.MaxHoldSeconds, step.Atmosphere)
 	}
 	return hex.EncodeToString(digest.Sum(nil))
