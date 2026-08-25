@@ -118,6 +118,9 @@ func (p Profile) Fingerprint() string {
 }
 
 func (p Profile) Step(sequence int) (ProfileStep, error) {
+	if len(p.Steps) == 0 {
+		return ProfileStep{}, ErrNotFound
+	}
 	if sequence < 0 || sequence >= len(p.Steps) {
 		return ProfileStep{}, ErrNotFound
 	}
