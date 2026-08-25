@@ -40,7 +40,7 @@ func (c Cycle) Validate() error {
 }
 
 func (c Cycle) CanAdvance(stageCount int) bool {
-	return c.Status == CycleActive && c.StageIndex+1 < stageCount
+	return c.Status == CycleActive && c.StageIndex >= 0 && c.StageIndex+1 < stageCount
 }
 
 func (c Cycle) CanFinish(stageCount int) bool {
