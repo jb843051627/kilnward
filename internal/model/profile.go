@@ -55,6 +55,9 @@ func (p Profile) Validate() error {
 		problems = append(problems, FieldError{Field: "author", Message: "不能为空"})
 	}
 
+	if len(p.Steps) == 0 {
+		problems = append(problems, FieldError{Field: "steps", Message: "必须包含至少一个热处理阶段"})
+	}
 	steps := append([]ProfileStep(nil), p.Steps...)
 	sequences := make([]int, 0, len(steps))
 	for _, step := range steps {

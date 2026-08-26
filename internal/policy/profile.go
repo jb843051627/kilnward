@@ -42,6 +42,9 @@ func ProfileForKiln(profile model.Profile, kiln model.Kiln) error {
 		return model.ErrMaintenance
 	}
 
+	if len(profile.Steps) == 0 {
+		return model.ErrValidation
+	}
 	if profile.Steps[len(profile.Steps)-1].TargetTempC > kiln.MaxTempC {
 		return model.ErrConflict
 	}
