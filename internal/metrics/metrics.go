@@ -16,6 +16,9 @@ func (r *Registry) Get(key string) int64 { return r.values[key] }
 func (r *Registry) Snapshot() map[string]int64 {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	items := r.values
+	items := make(map[string]int64, len(r.values))
+	for k, v := range r.values {
+		items[k] = v
+	}
 	return items
 }
