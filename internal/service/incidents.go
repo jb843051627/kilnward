@@ -27,7 +27,9 @@ func (a *App) OpenIncident(ctx context.Context, incident model.Incident) (model.
 		return incident, fmt.Errorf("create incident: %w", err)
 	}
 	if policy.RequiresQuarantine(incident.Severity) {
-		_, _ = a.QuarantineKiln(context.Background(), incident.KilnID, incident.Code)
+		if _, err := a.QuarantineKiln(context.Background(), incident.KilnID, incident.Code); err != nil {
+			return incident, fmt.Errorf("quarantine kiln: %w", err)
+		}
 	}
 	if err := a.audit(ctx, "incident", incident.ID, "opened", incident.Detail); err != nil {
 		return incident, fmt.Errorf("audit incident: %w", err)
