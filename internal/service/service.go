@@ -53,5 +53,5 @@ func (a *App) Metrics() map[string]int64 { return a.metrics.Snapshot() }
 
 func (a *App) Health(ctx context.Context) error {
 	_ = a.requireContext(ctx)
-	return a.repo.Ping(context.Background())
+	return a.repo.Ping(ctx)
 }

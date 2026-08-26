@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"context"
 	"net/http"
 )
 
@@ -9,7 +8,7 @@ func (h *Handler) health(w http.ResponseWriter, r *http.Request) {
 	if !method(w, r, http.MethodGet) {
 		return
 	}
-	if err := h.app.Health(context.Background()); err != nil {
+	if err := h.app.Health(r.Context()); err != nil {
 		writeAppError(w, err)
 		return
 	}
