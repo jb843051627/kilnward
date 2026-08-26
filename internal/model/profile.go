@@ -86,7 +86,7 @@ func (s ProfileStep) Validate() error {
 		return fmt.Errorf("profile step fields: %w", ErrValidation)
 	}
 	if s.ToleranceC < 0 || s.MinHoldSeconds < 0 || s.MaxHoldSeconds < s.MinHoldSeconds {
-		return ErrValidation
+		return fmt.Errorf("profile step hold: %w", ErrValidation)
 	}
 	if s.Atmosphere < 0 || s.Atmosphere > 100 {
 		return ErrValidation
