@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kilnward</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, sans-serif; background: #101518; color: #e7eef0; }
+    body { margin: 0; min-height: 100vh; background: linear-gradient(135deg, #101518, #1b2526); }
+    header { padding: 24px 32px 16px; border-bottom: 1px solid #334244; }
+    main { max-width: 1100px; margin: 0 auto; padding: 24px 32px; }
+    .toolbar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    button { background: #d27f3f; border: 0; color: #17110b; padding: 10px 16px; border-radius: 4px; cursor: pointer; font-weight: 700; }
+    button:hover { background: #efa467; }
+    #status { color: #9fb5b5; margin: 12px 0 20px; }
+    table { width: 100%; border-collapse: collapse; background: #182123; }
+    th, td { text-align: left; padding: 12px; border-bottom: 1px solid #334244; }
+    th { color: #b9c8c8; font-size: 12px; text-transform: uppercase; }
+    .state { color: #e9b77d; }
+  </style>
+</head>
+<body>
+  <header><strong>Kilnward</strong><span> · 窑炉热处理现场</span></header>
+  <main>
+    <div class="toolbar"><button id="refresh">刷新窑炉</button><span id="status">等待读取</span></div>
+    <table><thead><tr><th>名称</th><th>位置</th><th>状态</th><th>探头</th><th>上次维护</th></tr></thead><tbody id="kilns"></tbody></table>
+  </main>
+  <script>
+    const status = document.getElementById('status');
+    async function refresh() {
+      status.textContent = '读取中';
+      const response = await fetch('/api/kilns');
+      const kilns = await response.json();
+      document.getElementById('kilns').innerHTML = kilns.map(k => `<tr><td>${k.name}</td><td>${k.location}</td><td class="state">${k.state}</td><td>${k.probe_count}</td><td>${k.last_service || '未记录'}</td></tr>`).join('');
+      status.textContent = `${kilns.length} 台窑炉`;
+    }
+    document.getElementById('refresh').addEventListener('click', refresh);
+    refresh().catch(error => { status.textContent = error.message; });
+  </script>
+</body>
+</html>
