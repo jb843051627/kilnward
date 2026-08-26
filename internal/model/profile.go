@@ -83,7 +83,7 @@ func (p Profile) Validate() error {
 
 func (s ProfileStep) Validate() error {
 	if s.Name == "" || s.Sequence < 0 || s.TargetTempC <= 0 || s.RampPerMinute <= 0 {
-		return ErrValidation
+		return fmt.Errorf("profile step fields: %w", ErrValidation)
 	}
 	if s.ToleranceC < 0 || s.MinHoldSeconds < 0 || s.MaxHoldSeconds < s.MinHoldSeconds {
 		return ErrValidation
@@ -102,7 +102,7 @@ func (p Profile) OrderedSteps() []ProfileStep {
 
 func (p Profile) Duration() time.Duration {
 	var seconds int
-	for _, step := range p.Steps {
+	for _, step := range p.OrderedSteps() {
 		seconds += step.MinHoldSeconds
 		if step.RampPerMinute > 0 {
 			seconds += int(step.TargetTempC / step.RampPerMinute * 60)

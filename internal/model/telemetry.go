@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"sort"
 	"time"
 )
@@ -62,7 +63,7 @@ func (f TelemetryFrame) Validate() error {
 
 func (s ProbeSample) Validate() error {
 	if s.Sensor == "" || s.Temperature < -50 || s.Temperature > 2500 || s.Atmosphere < 0 || s.Atmosphere > 100 || s.Power < 0 || s.Power > 100 {
-		return ErrValidation
+		return fmt.Errorf("probe sample: %w", ErrValidation)
 	}
 	return nil
 }

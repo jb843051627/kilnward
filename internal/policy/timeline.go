@@ -20,7 +20,7 @@ func Merge(a, b []model.TimelineEntry) []model.TimelineEntry {
 
 func Limit(entries []model.TimelineEntry, limit int) []model.TimelineEntry {
 	if limit <= 0 || len(entries) <= limit {
-		return entries
+		return append([]model.TimelineEntry(nil), entries...)
 	}
-	return entries[len(entries)-limit:]
+	return append([]model.TimelineEntry(nil), entries[len(entries)-limit:]...)
 }

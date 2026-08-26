@@ -85,7 +85,7 @@ func (a *App) ReadingWindow(ctx context.Context, cycleID string) ([]model.Readin
 	if err != nil {
 		return nil, err
 	}
-	return readings, nil
+	return append([]model.Reading(nil), readings...), nil
 }
 
 func (a *App) SamplingStable(ctx context.Context, cycleID string) (bool, error) {

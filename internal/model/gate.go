@@ -40,6 +40,16 @@ func (r GateReport) Failed() []Gate {
 	return items
 }
 
+func (r GateReport) FailedNames() []string {
+	names := make([]string, 0)
+	for _, check := range r.Checks {
+		if !check.Passed {
+			names = append(names, check.Name)
+		}
+	}
+	return names
+}
+
 func (g Gate) Validate() error {
 	if g.ID == "" || g.CycleID == "" || g.Name == "" || g.CheckedBy == "" {
 		return ErrValidation

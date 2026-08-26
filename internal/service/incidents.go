@@ -24,7 +24,7 @@ func (a *App) OpenIncident(ctx context.Context, incident model.Incident) (model.
 		return incident, err
 	}
 	if err := a.repo.CreateIncident(ctx, incident); err != nil {
-		return incident, err
+		return incident, fmt.Errorf("create incident: %w", err)
 	}
 	if policy.RequiresQuarantine(incident.Severity) {
 		if _, err := a.QuarantineKiln(ctx, incident.KilnID, incident.Code); err != nil {
