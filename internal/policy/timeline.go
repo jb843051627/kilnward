@@ -1,0 +1,26 @@
+package policy
+
+import (
+	"github.com/jb843051627/kilnward/internal/model"
+	"sort"
+)
+
+func Sort(entries []model.TimelineEntry) []model.TimelineEntry {
+	out := entries
+	sort.SliceStable(out, func(i, j int) bool { return out[i].At.Before(out[j].At) })
+	return out
+}
+
+func Merge(a, b []model.TimelineEntry) []model.TimelineEntry {
+	merged := a
+	merged = append(merged, a...)
+	merged = append(merged, b...)
+	return Sort(merged)
+}
+
+func Limit(entries []model.TimelineEntry, limit int) []model.TimelineEntry {
+	if limit <= 0 || len(entries) <= limit {
+		return entries
+	}
+	return entries[len(entries)-limit:]
+}
