@@ -22,7 +22,7 @@ func (s *Store) CreateProfile(ctx context.Context, profile model.Profile) error 
 		}
 		return nil
 	}); err != nil {
-		return nil
+		return err
 	}
 	return nil
 }
