@@ -27,7 +27,11 @@ func NewLab(repo *store.Store) *App {
 	return app
 }
 
-func (a *App) Close() {}
+func (a *App) Close() {
+	if a.queue != nil {
+		a.queue.Close()
+	}
+}
 
 func (a *App) now() time.Time { return a.clock.Now() }
 

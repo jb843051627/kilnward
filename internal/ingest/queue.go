@@ -13,10 +13,11 @@ type Job struct {
 }
 
 type Queue struct {
-	jobs chan Job
-	stop chan struct{}
-	once sync.Once
-	wg   sync.WaitGroup
+	jobs      chan Job
+	stop      chan struct{}
+	startOnce sync.Once
+	closeOnce sync.Once
+	wg        sync.WaitGroup
 }
 
 func New(size int) *Queue {
@@ -24,7 +25,18 @@ func New(size int) *Queue {
 		size = 1
 	}
 	q := &Queue{jobs: make(chan Job, size), stop: make(chan struct{})}
+	q.Start()
 	return q
+}
+
+// Start launches the background worker that drains the job channel.
+// Without it, submitted jobs are never executed and their Done channels
+// never fire, so callers waiting on Drain time out. Idempotent.
+func (q *Queue) Start() {
+	q.startOnce.Do(func() {
+		q.wg.Add(1)
+		go q.loop()
+	})
 }
 
 func (q *Queue) loop() {
@@ -64,4 +76,12 @@ func (q *Queue) Submit(ctx context.Context, job Job) error {
 	}
 }
 
-func (q *Queue) Close() { close(q.stop) }
+// Close signals the worker to stop and blocks until it has drained.
+// Guarded by closeOnce so repeated calls (e.g. from overlapping shutdown
+// paths) don't panic on a double close of the stop channel.
+func (q *Queue) Close() {
+	q.closeOnce.Do(func() {
+		close(q.stop)
+	})
+	q.wg.Wait()
+}
