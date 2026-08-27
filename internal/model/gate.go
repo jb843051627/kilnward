@@ -31,7 +31,7 @@ type GateReport struct {
 }
 
 func (r GateReport) Failed() []Gate {
-	items := r.Checks
+	items := make([]Gate, 0, len(r.Checks))
 	for _, check := range r.Checks {
 		if !check.Passed {
 			items = append(items, check)
@@ -43,7 +43,9 @@ func (r GateReport) Failed() []Gate {
 func (r GateReport) FailedNames() []string {
 	names := make([]string, 0)
 	for _, check := range r.Checks {
-		names = append(names, check.Name)
+		if !check.Passed {
+			names = append(names, check.Name)
+		}
 	}
 	return names
 }
